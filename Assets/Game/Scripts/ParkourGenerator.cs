@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
+using UnityEditor;
 
 public class ParkourGenerator : MonoBehaviour
 {
-    [SerializeField] private BoxCollider tile;
+    [SerializeField] private GameObject prefab;
+    [SerializeField] private BoxCollider prefabCollider;
     [SerializeField] private Transform rootPoint;
     [SerializeField] private int size;
     private List<GameObject> parkours = new List<GameObject>();
@@ -25,12 +27,13 @@ public class ParkourGenerator : MonoBehaviour
         {
             for (int j = 0; j < size; j++)
             {
-                var spawnedTile = Instantiate(tile.gameObject, spawnPoint, Quaternion.identity);
+                var spawnedTile = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+                spawnedTile.transform.position = spawnPoint;
                 spawnedTile.transform.SetParent(parkourParent.transform);
-                spawnPoint.x += tile.size.x;
+                spawnPoint.x += prefabCollider.size.x;
             }
             spawnPoint = alteredRootPoint;
-            spawnPoint.z += tile.size.z * (i+1);
+            spawnPoint.z += prefabCollider.size.z * (i+1);
         }
         parkourParent.transform.SetParent(transform);
         parkours.Add(parkourParent);
