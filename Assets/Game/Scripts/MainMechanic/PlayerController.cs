@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [SelectionBase]
@@ -19,18 +16,13 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (!isMoving)
-        {
             HandleWithInput();
-        }
             
-        if(isMoving && rigidbody.velocity == Vector3.zero)
-        {
+        if (isMoving && rigidbody.velocity == Vector3.zero)
             ResetInputParams();
-        }
     }
 
-    private void Move2() => rigidbody.MovePosition(transform.position + speed * Time.deltaTime * input);
-    private void Move() => rigidbody.velocity = input * speed;
+    private void Move() => rigidbody.velocity = speed * input;
 
     #region Input Handling
     private void HandleWithInput()
@@ -79,5 +71,39 @@ public class PlayerController : MonoBehaviour
         {
             StackManager.Instance.CollectTile(other.gameObject);
         }
+
+        if (other.CompareTag("BridgeTile"))
+        {
+            StackManager.Instance.RemoveTile(other.transform.position);
+            Destroy(other.gameObject);
+        }
+
+        if(other.CompareTag("BridgeRouter"))
+        {
+            ChangeRoute(other.name);
+        }
+
+        
+    }
+
+    private void ChangeRoute(string routeName)
+    {
+        switch(routeName)
+        {
+            case "Right":
+                ApplyNewRoute(Vector3.right);
+                break;
+
+            case "Forward":
+                ApplyNewRoute(Vector3.forward);
+                break;
+        }
+    }
+
+    private void ApplyNewRoute(Vector3 newRoute)
+    {
+        rigidbody.velocity = Vector3.zero;
+        input = newRoute;
+        Move();
     }
 }

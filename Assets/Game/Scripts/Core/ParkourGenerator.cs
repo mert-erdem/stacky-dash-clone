@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
+using NaughtyAttributes;
 #endif
 using System.Linq;
-using NaughtyAttributes;
+
 
 public class ParkourGenerator : MonoBehaviour
 {
@@ -44,13 +45,11 @@ public class ParkourGenerator : MonoBehaviour
                 var spawnedTile = PrefabUtility.InstantiatePrefab(groundTilePrefab) as GameObject;
                 spawnedTile.transform.position = spawnPoint;
                 spawnedTile.transform.SetParent(parkourParent.transform);
-                spawnPoint.x += prefabCollider.size.x;
-
-                spawnedTile.isStatic = true;
+                spawnPoint.x += groundTilePrefab.transform.localScale.x;
                 parkour.Add(spawnedTile);
             }
             spawnPoint = alteredRootPoint;
-            spawnPoint.z += prefabCollider.size.z * (i+1);
+            spawnPoint.z += groundTilePrefab.transform.localScale.z * (i+1);
         }
         parkourParent.transform.SetParent(environmentRoot);
         parkours.Add(parkour);
@@ -91,6 +90,7 @@ public class ParkourGenerator : MonoBehaviour
         
         stackTilesParent = new GameObject();
         stackTilesParent.name = "Stack Tiles";
+        stackTilesParent.isStatic = true;
 
         foreach (var parkour in parkours)
         {

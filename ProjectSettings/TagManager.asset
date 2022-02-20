@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - StackTile
+  - Corner
+  - BridgeRouter
+  - BridgeTile
   layers:
   - Default
   - TransparentFX

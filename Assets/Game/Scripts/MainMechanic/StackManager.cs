@@ -12,6 +12,12 @@ public class StackManager : Singleton<StackManager>
 
     public void CollectTile(GameObject newTile)
     {
+        AddTile(newTile);
+        RefreshElementPos(playerVisual.transform, false);     
+    }
+
+    private void AddTile(GameObject newTile)
+    {
         var peakTile = tiles.Last().transform;
 
         var newTilePos = peakTile.position;
@@ -19,9 +25,31 @@ public class StackManager : Singleton<StackManager>
         newTile.transform.position = newTilePos;
         newTile.transform.SetParent(rootPos);
         tiles.Add(newTile);
+    }
 
-        var newPlayerPos = playerVisual.position;
-        newPlayerPos.y += DeltaPosY;
-        playerVisual.position = newPlayerPos;       
+    public void RemoveTile(Vector3 tileNewPos)
+    {
+        // remove a tile from stack
+        var tileToBeRemove = tiles.First();
+        tileToBeRemove.transform.SetParent(null);
+        tileToBeRemove.transform.position = tileNewPos;
+        tileToBeRemove.isStatic = true;
+        tileToBeRemove.tag = "Untagged";// to prevent re-collecting
+        tiles.RemoveAt(0);
+        // refresh player's visual and all tiles' positions that in the stack
+        tiles.ForEach(x => RefreshElementPos(x.transform, true));
+        RefreshElementPos(playerVisual.transform, true);
+    }
+
+    private void RefreshElementPos(Transform element, bool lower)
+    {
+        var newPos = element.position;
+
+        if (lower)
+            newPos.y -= DeltaPosY;
+        else
+            newPos.y += DeltaPosY;
+
+        element.position = newPos;
     }
 }
