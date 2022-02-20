@@ -13,18 +13,23 @@ public class PlayerController : MonoBehaviour
     private Vector3 mouseRootPos;
     private Vector3 input = Vector3.zero;
     private bool isMoving = false;
-    private float dragDeltaToMove = 100f;
+    private const float dragDeltaToMove = 50f;
 
 
     void Update()
     {
         if (!isMoving)
+        {
             HandleWithInput();
-
-        if (isMoving && rigidbody.velocity == Vector3.zero)
+        }
+            
+        if(isMoving && rigidbody.velocity == Vector3.zero)
+        {
             ResetInputParams();
+        }
     }
 
+    private void Move2() => rigidbody.MovePosition(transform.position + speed * Time.deltaTime * input);
     private void Move() => rigidbody.velocity = input * speed;
 
     #region Input Handling
@@ -38,11 +43,11 @@ public class PlayerController : MonoBehaviour
         {
             var dragVec = Input.mousePosition - mouseRootPos;
 
-            if(dragVec.magnitude > dragDeltaToMove)
+            if(dragVec.magnitude >= dragDeltaToMove)
             {
                 dragVec.Normalize();
 
-                if (Mathf.Abs(dragVec.x) > Mathf.Abs(dragVec.y))
+                if (Mathf.Abs(dragVec.x) >= Mathf.Abs(dragVec.y))
                     dragVec.y = 0;
                 else
                     dragVec.x = 0;
@@ -50,11 +55,11 @@ public class PlayerController : MonoBehaviour
                 input = dragVec;
                 input.z = input.y;
                 input.y = 0;
-
-                Move();
-
+               
                 mouseRootPos = Input.mousePosition;
                 isMoving = true;// player's started to moving
+
+                Move();
             }                  
         }
     }
@@ -62,8 +67,17 @@ public class PlayerController : MonoBehaviour
     //reached a corner point
     private void ResetInputParams()
     {
+        input = Vector3.zero;
         isMoving = false;
         mouseRootPos = Input.mousePosition;
     }
     #endregion
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.CompareTag("StackTile"))
+        {
+            StackManager.Instance.CollectTile(other.gameObject);
+        }
+    }
 }
