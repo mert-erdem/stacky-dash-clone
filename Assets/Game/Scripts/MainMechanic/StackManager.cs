@@ -18,6 +18,8 @@ public class StackManager : Singleton<StackManager>
 
     private void AddTile(GameObject newTile)
     {
+        newTile.tag = "Untagged";
+
         var peakTile = tiles.Last().transform;
 
         var newTilePos = peakTile.position;
@@ -31,10 +33,10 @@ public class StackManager : Singleton<StackManager>
     {
         // remove a tile from stack
         var tileToBeRemove = tiles.First();
+        tileToBeRemove.tag = "Untagged";// to prevent re-collecting
         tileToBeRemove.transform.SetParent(null);
         tileToBeRemove.transform.position = tileNewPos;
-        tileToBeRemove.isStatic = true;
-        tileToBeRemove.tag = "Untagged";// to prevent re-collecting
+        tileToBeRemove.isStatic = true;        
         tiles.RemoveAt(0);
         // refresh player's visual and all tiles' positions that in the stack
         tiles.ForEach(x => RefreshElementPos(x.transform, true));
@@ -48,7 +50,7 @@ public class StackManager : Singleton<StackManager>
         if (lower)
             newPos.y -= DeltaPosY;
         else
-            newPos.y += DeltaPosY;
+            newPos.y += DeltaPosY;            
 
         element.position = newPos;
     }

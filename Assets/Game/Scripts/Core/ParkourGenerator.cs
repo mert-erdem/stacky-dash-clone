@@ -10,9 +10,8 @@ using System.Linq;
 
 public class ParkourGenerator : MonoBehaviour
 {
-    [Header("Ground Tile")]
+    [Header("Parkour Generation")]
     [SerializeField] private GameObject groundTilePrefab;
-    [SerializeField] private BoxCollider prefabCollider;
     [SerializeField] private Transform rootPoint;
     [SerializeField] private int sizeX, sizeY;
     [SerializeField] [Tooltip("Empty game object for all environment objects")] private Transform environmentRoot;
@@ -23,6 +22,12 @@ public class ParkourGenerator : MonoBehaviour
     [SerializeField] private GameObject stackTilePrefab;
     private List<GameObject> stackTiles = new List<GameObject>();
     private GameObject stackTilesParent;
+
+    [Header("Stack Tile Trigger for Bridge")]
+    [SerializeField] private GameObject stackTileTriggerPrefab;
+    [SerializeField] private GameObject bridgeVisual;
+    [SerializeField] private int count = 5;
+    [SerializeField] [Tooltip("Generate direction")] private bool horizontal = true;
 
 #if UNITY_EDITOR
     [Button]
@@ -42,14 +47,14 @@ public class ParkourGenerator : MonoBehaviour
         {
             for (int j = 0; j < sizeX; j++)
             {
-                var spawnedTile = PrefabUtility.InstantiatePrefab(groundTilePrefab) as GameObject;
+                var spawnedTile = PrefabUtility.InstantiatePrefab(groundTilePrefab) as GameObject;                
                 spawnedTile.transform.position = spawnPoint;
                 spawnedTile.transform.SetParent(parkourParent.transform);
                 spawnPoint.x += groundTilePrefab.transform.localScale.x;
                 parkour.Add(spawnedTile);
             }
             spawnPoint = alteredRootPoint;
-            spawnPoint.z += groundTilePrefab.transform.localScale.z * (i+1);
+            spawnPoint.z += groundTilePrefab.transform.localScale.z * (i + 1);
         }
         parkourParent.transform.SetParent(environmentRoot);
         parkours.Add(parkour);
@@ -103,11 +108,65 @@ public class ParkourGenerator : MonoBehaviour
                     spawnedStackTile.transform.SetParent(stackTilesParent.transform);
 
                     stackTiles.Add(spawnedStackTile);
+
+                    parkour.Remove(tile);
+                    DestroyImmediate(tile);
                 }
             }
         }
 
         stackTilesParent.transform.SetParent(environmentRoot);
+    }
+
+    [Button]
+    public void GenerateBridgeTileTriggers()
+    {
+        var bridgeTriggersParent = new GameObject();
+        bridgeTriggersParent.name = "TileTriggerParent";
+
+        for (int i = 0; i < count; i++)
+        {
+            var spawnedTrigger = PrefabUtility.InstantiatePrefab(stackTileTriggerPrefab) as GameObject;
+            Vector3 spawnPoint = rootPoint.position;
+            if(horizontal)
+            {
+                spawnPoint.x += (stackTilePrefab.transform.localScale.x + 0.1f) * i;
+            }
+            else
+            {
+                spawnPoint.z += (stackTilePrefab.transform.localScale.z + 0.1f) * i;
+            }
+            
+            spawnedTrigger.transform.position = spawnPoint;
+
+            spawnedTrigger.transform.SetParent(bridgeTriggersParent.transform);
+        }
+
+        var spawnedBridgeVisual = PrefabUtility.InstantiatePrefab(bridgeVisual) as GameObject;
+        Vector3 bridgeVisualPos = rootPoint.position;
+        if(horizontal)
+        {
+            spawnedBridgeVisual.transform.localScale = new Vector3(
+                count + 0.5f,
+                spawnedBridgeVisual.transform.localScale.y,
+                spawnedBridgeVisual.transform.localScale.z);
+
+            bridgeVisualPos.x += stackTileTriggerPrefab.transform.localScale.x * (count / 2) - 0.25f;
+            
+        }
+        else
+        {
+            spawnedBridgeVisual.transform.localScale = new Vector3(
+                spawnedBridgeVisual.transform.localScale.x,
+                spawnedBridgeVisual.transform.localScale.y,
+                count + 0.5f);
+
+            bridgeVisualPos.z += stackTileTriggerPrefab.transform.localScale.z * (count /2) - 0.25f;            
+        }
+
+        bridgeVisualPos.y -= 0.3f;
+        spawnedBridgeVisual.transform.position = bridgeVisualPos;
+        spawnedBridgeVisual.transform.SetParent(bridgeTriggersParent.transform);
     }
 #endif
 }

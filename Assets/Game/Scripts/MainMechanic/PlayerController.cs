@@ -1,9 +1,12 @@
+using System.Collections;
 using UnityEngine;
 
 [SelectionBase]
 public class PlayerController : MonoBehaviour
 {
+    [Header("Components")]
     [SerializeField] private new Rigidbody rigidbody;
+    [SerializeField] private Animator animator;
     [Header("Specs")]
     [SerializeField] private float speed = 10f;
     //input params
@@ -59,7 +62,7 @@ public class PlayerController : MonoBehaviour
     //reached a corner point
     private void ResetInputParams()
     {
-        input = Vector3.zero;
+        //input = Vector3.zero;
         isMoving = false;
         mouseRootPos = Input.mousePosition;
     }
@@ -68,24 +71,21 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if(other.CompareTag("StackTile"))
-        {
+        {          
             StackManager.Instance.CollectTile(other.gameObject);
         }
-
-        if (other.CompareTag("BridgeTile"))
+        else if (other.CompareTag("BridgeTile"))
         {
             StackManager.Instance.RemoveTile(other.transform.position);
             Destroy(other.gameObject);
         }
-
-        if(other.CompareTag("BridgeRouter"))
+        else if(other.CompareTag("BridgeRouter"))
         {
             ChangeRoute(other.name);
-        }
-
-        
+        }       
     }
 
+    #region Bridge Routing
     private void ChangeRoute(string routeName)
     {
         switch(routeName)
@@ -99,11 +99,11 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-
     private void ApplyNewRoute(Vector3 newRoute)
     {
         rigidbody.velocity = Vector3.zero;
         input = newRoute;
         Move();
     }
+    #endregion
 }
