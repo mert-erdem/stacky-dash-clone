@@ -7,14 +7,13 @@ using NaughtyAttributes;
 #endif
 using System.Linq;
 
-
 public class ParkourGenerator : MonoBehaviour
 {
     [Header("Parkour Generation")]
     [SerializeField] private GameObject groundTilePrefab;
     [SerializeField] private Transform rootPoint;
     [SerializeField] private int sizeX, sizeY;
-    [SerializeField] [Tooltip("Empty game object for all environment objects")] private Transform environmentRoot;
+    [SerializeField] [Tooltip("Parent game object of all environment objects")] private Transform environmentRoot;
     private List<List<GameObject>> parkours = new List<List<GameObject>>();
     private List<GameObject> parkourParents = new List<GameObject>();
 

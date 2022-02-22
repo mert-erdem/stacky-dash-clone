@@ -10,6 +10,11 @@ public class StackManager : Singleton<StackManager>
     private float DeltaPosY => stackTileCollider.size.y;
     [SerializeField] private List<GameObject> tiles;
 
+    private void Start()
+    {
+        CanvasController.Instance.UpdateStackIndicatorText(tiles.Count);
+    }
+
     public void CollectTile(GameObject newTile)
     {
         AddTile(newTile);
@@ -27,6 +32,8 @@ public class StackManager : Singleton<StackManager>
         newTile.transform.position = newTilePos;
         newTile.transform.SetParent(rootPos);
         tiles.Add(newTile);
+        // update UI
+        CanvasController.Instance.UpdateStackIndicatorText(tiles.Count);
     }
 
     public bool RemoveTile(Vector3 tileNewPos)
@@ -43,6 +50,8 @@ public class StackManager : Singleton<StackManager>
             // refresh player's visual and all tiles' positions that in the stack
             tiles.ForEach(x => RefreshElementPos(x.transform, true));
             RefreshElementPos(playerVisual.transform, true);
+            // update UI
+            CanvasController.Instance.UpdateStackIndicatorText(tiles.Count);
 
             return true;
         }

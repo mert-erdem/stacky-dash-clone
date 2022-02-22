@@ -27,7 +27,10 @@ public class PlayerController : MonoBehaviour
             ResetInputParams();
     }
 
-    private void Move() => rigidbody.velocity = speed * input;
+    private void Move()
+    {
+        rigidbody.velocity = speed * input;
+    }
 
     #region Input Handling
     private void HandleWithInput()
@@ -62,7 +65,6 @@ public class PlayerController : MonoBehaviour
                
                 mouseRootPos = Input.mousePosition;
                 isMoving = true;// player's started to moving
-                //isStuck = false;
 
                 Move();
             }                  
@@ -82,6 +84,8 @@ public class PlayerController : MonoBehaviour
     #region Bridge Routing
     private void HandleWithBridge(GameObject trigger)
     {
+        animator.SetBool("IsJumping", false);
+
         bool bridgePassed = StackManager.Instance.RemoveTile(trigger.transform.position);
 
         if (!bridgePassed)// player couldn't passed a bridge
@@ -91,7 +95,6 @@ public class PlayerController : MonoBehaviour
                 GameManager.ActionLevelPassed?.Invoke();
                 Stop();
             }
-
             isStuck = true;
             ResetInputParams();
         }
@@ -130,6 +133,21 @@ public class PlayerController : MonoBehaviour
         enabled = false;
     }
 
+    private void HandleWithMiniGame()
+    {
+        GameManager.ActionMiniGame?.Invoke();
+        animator.SetTrigger("MiniGame");
+        visual.rotation = Quaternion.Euler(0, 90f, 0);
+    }
+
+    private void HandleWithFinish()
+    {
+        GameManager.ActionLevelPassed?.Invoke();
+        animator.SetTrigger("Finish");
+        visual.rotation = Quaternion.Euler(0, 180f, 0);
+        Stop();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         // IN GAME PHASE
@@ -140,8 +158,7 @@ public class PlayerController : MonoBehaviour
         }
         if (other.CompareTag("BridgeTile"))
         {
-            HandleWithBridge(other.gameObject);
-            animator.SetBool("IsJumping", false);
+            HandleWithBridge(other.gameObject);            
         }
         if(other.CompareTag("BridgeRouter"))
         {
@@ -150,10 +167,7 @@ public class PlayerController : MonoBehaviour
         // MINI GAME PHASE
         if(other.CompareTag("MiniGame"))
         {
-            GameManager.Instance.EnteredMiniGame = true;
-            GameManager.ActionMiniGame?.Invoke();
-            animator.SetTrigger("MiniGame");
-            visual.rotation = Quaternion.Euler(0, 90f, 0);
+            HandleWithMiniGame();
         }
         if(other.CompareTag("Multiplier"))
         {
@@ -162,12 +176,7 @@ public class PlayerController : MonoBehaviour
         }
         if(other.CompareTag("Finish"))
         {
-            GameManager.ActionLevelPassed?.Invoke();
-            animator.SetTrigger("Finish");
-            visual.rotation = Quaternion.Euler(0, 180f, 0);
-            Stop();
+            HandleWithFinish();
         }
     }
-
-    
 }
