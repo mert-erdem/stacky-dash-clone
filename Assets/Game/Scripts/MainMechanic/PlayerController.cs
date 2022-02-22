@@ -4,6 +4,7 @@ using UnityEngine;
 [SelectionBase]
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] private Transform visual;
     [Header("Components")]
     [SerializeField] private new Rigidbody rigidbody;
     [SerializeField] private Animator animator;
@@ -14,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 input = Vector3.zero;
     private bool isMoving = false;
     private const float dragDeltaToMove = 50f;
+    private bool isStuck = false;
 
 
     void Update()
@@ -47,12 +49,20 @@ public class PlayerController : MonoBehaviour
                 else
                     dragVec.x = 0;
 
-                input = dragVec;
-                input.z = input.y;
-                input.y = 0;
+                Vector3 newInput = dragVec;
+                newInput.z = newInput.y;
+                newInput.y = 0;
+
+                if (isStuck && newInput != Vector3.back)
+                    return;// player can not move without required amount of tile
+                else if (newInput == Vector3.back)
+                    isStuck = false;
+
+                input = newInput;
                
                 mouseRootPos = Input.mousePosition;
                 isMoving = true;// player's started to moving
+                //isStuck = false;
 
                 Move();
             }                  
@@ -62,33 +72,39 @@ public class PlayerController : MonoBehaviour
     //reached a corner point
     private void ResetInputParams()
     {
-        //input = Vector3.zero;
+        animator.SetBool("IsJumping", false);
+        rigidbody.velocity = Vector3.zero;
         isMoving = false;
         mouseRootPos = Input.mousePosition;
     }
     #endregion
 
-    private void OnTriggerEnter(Collider other)
+    #region Bridge Routing
+    private void HandleWithBridge(GameObject trigger)
     {
-        if(other.CompareTag("StackTile"))
-        {          
-            StackManager.Instance.CollectTile(other.gameObject);
-        }
-        else if (other.CompareTag("BridgeTile"))
+        bool bridgePassed = StackManager.Instance.RemoveTile(trigger.transform.position);
+
+        if (!bridgePassed)// player couldn't passed a bridge
         {
-            StackManager.Instance.RemoveTile(other.transform.position);
-            Destroy(other.gameObject);
+            if(GameManager.Instance.EnteredMiniGame)// player stopped at mini game phase
+            {
+                GameManager.ActionLevelPassed?.Invoke();
+                Stop();
+            }
+
+            isStuck = true;
+            ResetInputParams();
         }
-        else if(other.CompareTag("BridgeRouter"))
+        else
         {
-            ChangeRoute(other.name);
-        }       
+            Destroy(trigger.gameObject);
+            isStuck = false;// player can move on the bridge
+        }
     }
 
-    #region Bridge Routing
     private void ChangeRoute(string routeName)
     {
-        switch(routeName)
+        switch (routeName)
         {
             case "Right":
                 ApplyNewRoute(Vector3.right);
@@ -104,6 +120,54 @@ public class PlayerController : MonoBehaviour
         rigidbody.velocity = Vector3.zero;
         input = newRoute;
         Move();
-    }
+    }   
     #endregion
+
+    // level end
+    private void Stop()
+    {
+        rigidbody.velocity = Vector3.zero;
+        enabled = false;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // IN GAME PHASE
+        if(other.CompareTag("StackTile"))
+        {          
+            StackManager.Instance.CollectTile(other.gameObject);
+            animator.SetBool("IsJumping", true);
+        }
+        if (other.CompareTag("BridgeTile"))
+        {
+            HandleWithBridge(other.gameObject);
+            animator.SetBool("IsJumping", false);
+        }
+        if(other.CompareTag("BridgeRouter"))
+        {
+            ChangeRoute(other.name);
+        }
+        // MINI GAME PHASE
+        if(other.CompareTag("MiniGame"))
+        {
+            GameManager.Instance.EnteredMiniGame = true;
+            GameManager.ActionMiniGame?.Invoke();
+            animator.SetTrigger("MiniGame");
+            visual.rotation = Quaternion.Euler(0, 90f, 0);
+        }
+        if(other.CompareTag("Multiplier"))
+        {
+            //print(other.transform.parent.name);
+            // apply multiplier's value
+        }
+        if(other.CompareTag("Finish"))
+        {
+            GameManager.ActionLevelPassed?.Invoke();
+            animator.SetTrigger("Finish");
+            visual.rotation = Quaternion.Euler(0, 180f, 0);
+            Stop();
+        }
+    }
+
+    
 }

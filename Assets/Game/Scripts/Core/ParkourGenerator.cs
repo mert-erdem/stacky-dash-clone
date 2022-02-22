@@ -25,7 +25,6 @@ public class ParkourGenerator : MonoBehaviour
 
     [Header("Stack Tile Trigger for Bridge")]
     [SerializeField] private GameObject stackTileTriggerPrefab;
-    [SerializeField] private GameObject bridgeVisual;
     [SerializeField] private int count = 5;
     [SerializeField] [Tooltip("Generate direction")] private bool horizontal = true;
 
@@ -141,32 +140,6 @@ public class ParkourGenerator : MonoBehaviour
 
             spawnedTrigger.transform.SetParent(bridgeTriggersParent.transform);
         }
-
-        var spawnedBridgeVisual = PrefabUtility.InstantiatePrefab(bridgeVisual) as GameObject;
-        Vector3 bridgeVisualPos = rootPoint.position;
-        if(horizontal)
-        {
-            spawnedBridgeVisual.transform.localScale = new Vector3(
-                count + 0.5f,
-                spawnedBridgeVisual.transform.localScale.y,
-                spawnedBridgeVisual.transform.localScale.z);
-
-            bridgeVisualPos.x += stackTileTriggerPrefab.transform.localScale.x * (count / 2) - 0.25f;
-            
-        }
-        else
-        {
-            spawnedBridgeVisual.transform.localScale = new Vector3(
-                spawnedBridgeVisual.transform.localScale.x,
-                spawnedBridgeVisual.transform.localScale.y,
-                count + 0.5f);
-
-            bridgeVisualPos.z += stackTileTriggerPrefab.transform.localScale.z * (count /2) - 0.25f;            
-        }
-
-        bridgeVisualPos.y -= 0.3f;
-        spawnedBridgeVisual.transform.position = bridgeVisualPos;
-        spawnedBridgeVisual.transform.SetParent(bridgeTriggersParent.transform);
     }
 #endif
 }

@@ -29,18 +29,27 @@ public class StackManager : Singleton<StackManager>
         tiles.Add(newTile);
     }
 
-    public void RemoveTile(Vector3 tileNewPos)
+    public bool RemoveTile(Vector3 tileNewPos)
     {
-        // remove a tile from stack
-        var tileToBeRemove = tiles.First();
-        tileToBeRemove.tag = "Untagged";// to prevent re-collecting
-        tileToBeRemove.transform.SetParent(null);
-        tileToBeRemove.transform.position = tileNewPos;
-        tileToBeRemove.isStatic = true;        
-        tiles.RemoveAt(0);
-        // refresh player's visual and all tiles' positions that in the stack
-        tiles.ForEach(x => RefreshElementPos(x.transform, true));
-        RefreshElementPos(playerVisual.transform, true);
+        if(tiles.Count > 1)
+        {
+            // remove a tile from stack
+            var tileToBeRemove = tiles.First();
+            tileToBeRemove.tag = "Untagged";// to prevent re-collecting
+            tileToBeRemove.transform.SetParent(null);
+            tileToBeRemove.transform.position = tileNewPos;
+            tileToBeRemove.isStatic = true;
+            tiles.RemoveAt(0);
+            // refresh player's visual and all tiles' positions that in the stack
+            tiles.ForEach(x => RefreshElementPos(x.transform, true));
+            RefreshElementPos(playerVisual.transform, true);
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private void RefreshElementPos(Transform element, bool lower)

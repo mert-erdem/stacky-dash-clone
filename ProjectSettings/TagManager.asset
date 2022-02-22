@@ -8,6 +8,8 @@ TagManager:
   - Corner
   - BridgeRouter
   - BridgeTile
+  - Multiplier
+  - MiniGame
   layers:
   - Default
   - TransparentFX
