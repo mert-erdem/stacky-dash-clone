@@ -22,6 +22,14 @@ public class GameManager : Singleton<GameManager>
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    public void LoadNextLevel()
+    {
+        int nextLevel = PlayerPrefs.GetInt("LEVEL", 0);
+        nextLevel++;
+        PlayerPrefs.SetInt("LEVEL", nextLevel); 
+        SceneManager.LoadScene(nextLevel);     
+    }
+
     private void SetMiniGame()
     {
         _enteredMiniGame = true;

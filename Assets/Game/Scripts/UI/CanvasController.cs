@@ -45,7 +45,7 @@ public class CanvasController : Singleton<CanvasController>
 
     public void ButtonNextLevelPressed()
     {
-
+        GameManager.Instance.LoadNextLevel();
     }
     #endregion
 

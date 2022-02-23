@@ -92,6 +92,7 @@ GameObject:
   - component: {fileID: 4782505045184003931}
   - component: {fileID: 3099368198532191915}
   - component: {fileID: 1905694089515661923}
+  - component: {fileID: -3159743425879512990}
   m_Layer: 0
   m_Name: Stack Tile
   m_TagString: StackTile
@@ -143,3 +144,16 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
+--- !u!114 &-3159743425879512990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5603187791900218316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 359370e5ef166474eb914604450ac1fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  renderer: {fileID: 1732986583579936052}

@@ -109,12 +109,20 @@ public class PlayerController : MonoBehaviour
     {
         switch (routeName)
         {
+            case "Left":
+                ApplyNewRoute(Vector3.left);
+                break;
+
             case "Right":
                 ApplyNewRoute(Vector3.right);
                 break;
 
             case "Forward":
                 ApplyNewRoute(Vector3.forward);
+                break;
+
+            case "Back":
+                ApplyNewRoute(Vector3.back);
                 break;
         }
     }
