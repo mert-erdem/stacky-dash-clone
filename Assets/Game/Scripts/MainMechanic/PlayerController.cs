@@ -64,7 +64,7 @@ public class PlayerController : MonoBehaviour
                 input = newInput;
                
                 mouseRootPos = Input.mousePosition;
-                isMoving = true;// player's started to moving
+                isMoving = true;
 
                 Move();
             }                  
@@ -92,15 +92,14 @@ public class PlayerController : MonoBehaviour
         {
             if(GameManager.Instance.EnteredMiniGame)// player stopped at mini game phase
             {
-                GameManager.ActionLevelPassed?.Invoke();
-                Stop();
+                HandleWithFinish();
             }
             isStuck = true;
             ResetInputParams();
         }
         else
         {
-            Destroy(trigger.gameObject);
+            Destroy(trigger);
             isStuck = false;// player can move on the bridge
         }
     }

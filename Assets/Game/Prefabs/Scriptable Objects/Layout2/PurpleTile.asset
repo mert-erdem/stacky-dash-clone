@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c17aff7f7fa02440f80f56a1d7c86c2b, type: 3}
-  m_Name: RedTile
+  m_Name: PurpleTile
   m_EditorClassIdentifier: 
-  tileMaterial: {fileID: 2100000, guid: ce83fc5e1de2f4096ab3c9e6fbd2ca99, type: 2}
+  tileMaterial: {fileID: 2100000, guid: 3347d59cf9b844d7eba15742d94298f8, type: 2}

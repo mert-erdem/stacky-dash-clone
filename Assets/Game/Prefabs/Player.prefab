@@ -80,7 +80,7 @@ MonoBehaviour:
   visual: {fileID: 3145467137325146794}
   rigidbody: {fileID: 1283636355407783615}
   animator: {fileID: 1283636355881527729}
-  speed: 8
+  speed: 13
 --- !u!114 &1283636355407783601
 MonoBehaviour:
   m_ObjectHideFlags: 0

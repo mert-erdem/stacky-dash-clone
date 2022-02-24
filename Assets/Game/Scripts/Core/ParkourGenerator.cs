@@ -10,6 +10,7 @@ using System.Linq;
 public class ParkourGenerator : MonoBehaviour
 {
     [SerializeField] [Tooltip("Parent game object of all environment objects")] private Transform environmentRoot;
+
     [Header("Parkour Generation")]
     [SerializeField] private Tile groundTilePrefab;
     [SerializeField] private TileData groundTileData;
@@ -17,11 +18,13 @@ public class ParkourGenerator : MonoBehaviour
     [SerializeField] private int sizeX, sizeY;   
     private List<List<GameObject>> parkours = new List<List<GameObject>>();
     private List<GameObject> parkourParents = new List<GameObject>();
+
     [Header("Stack Tile")]
     [SerializeField] private Tile stackTilePrefab;
     [SerializeField] private TileData stackTileData;
     private List<GameObject> stackTiles = new List<GameObject>();
     private GameObject stackTilesParent;
+
     [Header("Stack Tile Trigger for Bridge")]
     [SerializeField] private GameObject stackTileTriggerPrefab;
     [SerializeField] private Tile bridgeVisual;
@@ -30,6 +33,7 @@ public class ParkourGenerator : MonoBehaviour
     [SerializeField] [Tooltip("Generate direction")] private bool horizontal = true;
 
 #if UNITY_EDITOR
+    // generates a tile set with given value of X and Y dimensions
     [Button]
     public void GenerateParkour()
     {
@@ -100,13 +104,11 @@ public class ParkourGenerator : MonoBehaviour
         stackTilesParent.name = "Stack Tiles";
         stackTilesParent.isStatic = true;
 
-        var inactiveTiles = new List<GameObject>();
-
         foreach (var parkour in parkours)
         {
             foreach (var tile in parkour)
             {
-                if(tile.activeInHierarchy == false)
+                if(!tile.activeInHierarchy)
                 {
                     var generatedStackTile = PrefabUtility.InstantiatePrefab(stackTilePrefab) as Tile;
                     generatedStackTile.transform.position = tile.transform.position;
@@ -116,13 +118,9 @@ public class ParkourGenerator : MonoBehaviour
                     generatedStackTile.Initialize();
 
                     stackTiles.Add(generatedStackTile.gameObject);
-                    inactiveTiles.Add(tile);
                 }
             }
         }
-        // delete unnecessary tiles
-        inactiveTiles.ForEach(x => DestroyImmediate(x));
-        inactiveTiles.Clear();
 
         stackTilesParent.transform.SetParent(environmentRoot);
     }
@@ -147,8 +145,7 @@ public class ParkourGenerator : MonoBehaviour
             generatedTrigger.transform.SetParent(bridgeTriggersParent.transform);
         }
 
-        var generatedBridgeVisual = PrefabUtility.InstantiatePrefab(bridgeVisual) as Tile;
-        
+        var generatedBridgeVisual = PrefabUtility.InstantiatePrefab(bridgeVisual) as Tile;       
         // set visual's position
         var newBridgeVisualPos = rootPoint.position;
 
@@ -172,8 +169,7 @@ public class ParkourGenerator : MonoBehaviour
             newBridgeVisualScale.z = count + 1;
             newBridgeVisualScale.x = 0.3f;
         }
-            
-        
+                    
         generatedBridgeVisual.transform.localScale = newBridgeVisualScale;
         // set visual's color
         generatedBridgeVisual.data = bridgeVisualData;

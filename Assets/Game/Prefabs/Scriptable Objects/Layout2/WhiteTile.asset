@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c17aff7f7fa02440f80f56a1d7c86c2b, type: 3}
-  m_Name: BlueTile
+  m_Name: WhiteTile
   m_EditorClassIdentifier: 
-  tileMaterial: {fileID: 2100000, guid: acca66a1a3f6c4a42a22402e88897989, type: 2}
+  tileMaterial: {fileID: 2100000, guid: fb6f8f7a3400445a3959d8d16e3abb59, type: 2}
